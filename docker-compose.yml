@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  elasticsearch:
+    image: elasticsearch:latest
+    command: elasticsearch -Des.network.host=0.0.0.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  pcp-all:
+    build: ./docker-pcp-all
+    image: hc000/docker-pcp-all:master
+    command: /usr/bin/supervisord
+    ports:
+      - "44321:44321"
+      - "44323:44323"
+
+  vector:
+    image: netflixoss/vector:latest
+    ports:
+     - "80:80"
+
+  pcp2es:
+    build: .
+    depends_on:
+      - pcp-all
+    network_mode: host
